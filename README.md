@@ -13,7 +13,7 @@
 ## 安装
 
 ```bash
-dsh plugin --profile <profile> add github:iuuuuuuuu/dsh-reverse-skill
+dsh plugin --profile <profile> add github:Mushroomcowisheggs/dsh-reverse-skill
 ```
 
 pnpm 会把这个 spec 解析成固定到某个 commit 的 codeload tarball；因为 `package.json` 里声明了

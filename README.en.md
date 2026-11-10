@@ -15,7 +15,7 @@ vendors upstream verbatim and re-syncs from it automatically.
 ## Install
 
 ```bash
-dsh plugin --profile <profile> add github:iuuuuuuuu/dsh-reverse-skill
+dsh plugin --profile <profile> add github:Mushroomcowisheggs/dsh-reverse-skill
 ```
 
 pnpm resolves the spec to a codeload tarball pinned at a commit, and DSH
