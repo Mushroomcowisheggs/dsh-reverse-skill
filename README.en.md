@@ -157,7 +157,9 @@ UPSTREAM-*.md               upstream READMEs, renamed to avoid clashing with thi
 ```
 
 Everything except `lib/`, `cordis.patch.yml`, `package.json`, `README.md`, `README.en.md`,
-`LICENSE` and `tools/` is upstream content, copied byte for byte. The two upstream trees keep their
+`LICENSE` and `tools/` is upstream content, copied byte for byte — **except the locally maintained
+files listed in the previous section** (the 22 paths that keep the Windows side detect-only), which are
+maintained here and never mirrored. The two upstream trees keep their
 original relative positions because skill bodies reference each other by relative path
 (for example `skills/ctf-sandbox/SKILL.md` links
 `../../CTF-Sandbox-Orchestrator/ctf-sandbox-orchestrator/SKILL.md`).

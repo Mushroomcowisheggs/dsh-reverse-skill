@@ -146,7 +146,9 @@ UPSTREAM-*.md               上游的 README，重命名以免与本文件冲突
 ```
 
 除 `lib/`、`cordis.patch.yml`、`package.json`、`README.md`、`README.en.md`、`LICENSE` 与 `tools/`
-之外，其余都是上游内容，逐字节复制。两棵上游目录保持原来的相对位置，因为技能正文之间用相对路径互相引用
+之外，其余基本都是上游内容，逐字节复制；**例外是上一节列出的那批本地自维护文件**
+（Windows 侧只探测不安装的那 22 个路径），它们按自己的写法维护，不从上游镜像。
+两棵上游目录保持原来的相对位置，因为技能正文之间用相对路径互相引用
 （例如 `skills/ctf-sandbox/SKILL.md` 链接 `../../CTF-Sandbox-Orchestrator/ctf-sandbox-orchestrator/SKILL.md`）。
 
 上游的 `plugins/`（Codex 适配器）没有被 vendor：它的 router 与 `skills/SKILL.md` 重复，而后者内容更全。
