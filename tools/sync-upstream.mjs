@@ -92,6 +92,8 @@ const LOCALLY_MAINTAINED_PATHS = new Set([
   'skills/ida-reverse/scripts/start-gui.ps1',
   'skills/ida-reverse/scripts/start.ps1',
   'skills/radare2/scripts/recon.ps1',
+  'RULES.md',
+  'RULES_zh.md',
   'skills/SKILL.md',
   'skills/CONTRIBUTING.md',
   'skills/apk-reverse/SKILL.md',

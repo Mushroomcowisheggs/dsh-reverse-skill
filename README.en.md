@@ -132,7 +132,20 @@ matches:
 | `skills/browser-automation/scripts/setup.ps1` | readiness check; no winget / `npm install -g` |
 | `skills/ida-reverse/scripts/open.ps1` · `start-gui.ps1` · `start.ps1` | candidate lists drop the `%USERPROFILE%` probes |
 | `skills/radare2/scripts/recon.ps1` | failure hint says "install it yourself" instead of claiming an auto-install |
+| `RULES.md` · `RULES_zh.md` | the post-task "write back" step now targets the work target's `notes/`, package dirs stay read-only |
 | `skills/SKILL.md` · `skills/CONTRIBUTING.md` · `skills/apk-reverse/SKILL.md` · `skills/browser-automation/SKILL.md` · `skills/ida-reverse/SKILL.md` · `skills/radare2/SKILL.md` · `skills/ops/sandbox-profile.md` · `skills/ops/skill-supply-chain.md` | docs state "detect only, operator installs" instead of describing auto-install |
+
+### Where notes go
+
+The package directory is **read-only**: the "write back after each task" items in
+`RULES.md` / `RULES_zh.md` now target the **current work target's** `notes/` (for example
+`work/<case>/notes/`), and package-internal updates (`references/`, `bootstrap-manifest`,
+`routing-*.json`) only happen when the task itself is maintaining this repository. Writing into
+the package (including `field-journal/`) is overwritten on the next install and leaks into every
+later task.
+
+`field-journal/` stays as packaged material: reading precedents, checking `_index.md` and the
+per-skill precedent reads are all unchanged — nothing writes there anymore.
 
 The cost is spelled out in the `tools/sync-upstream.mjs` comment: **upstream edits to those
 files do not flow in automatically**. The nightly sync still updates everything else; the new

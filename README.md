@@ -123,7 +123,18 @@ pnpm test             # verify + 跑一遍 provider 契约
 | `skills/browser-automation/scripts/setup.ps1` | 就绪检查；不再 winget/`npm install -g` 装东西 |
 | `skills/ida-reverse/scripts/open.ps1` · `start-gui.ps1` · `start.ps1` | 候选目录去掉 `%USERPROFILE%` 探测 |
 | `skills/radare2/scripts/recon.ps1` | 探测失败时的提示改成「自行安装」，不再自称自动安装 |
+| `RULES.md` · `RULES_zh.md` | 任务完成后的「回写经验」改成写到当前工作对象的 `notes/`，包内目录只读 |
 | `skills/SKILL.md` · `skills/CONTRIBUTING.md` · `skills/apk-reverse/SKILL.md` · `skills/browser-automation/SKILL.md` · `skills/ida-reverse/SKILL.md` · `skills/radare2/SKILL.md` · `skills/ops/sandbox-profile.md` · `skills/ops/skill-supply-chain.md` | 文档改成「只探测、由操作者安装」，不再指导自动安装 |
+
+### 记录写在哪
+
+包目录是**只读**的：`RULES.md` / `RULES_zh.md` 里那些「任务完成后必须回写」的指令，写入位置
+改成**当前工作对象**的 `notes/`（例如 `work/<case>/notes/`）；包内的 `references/`、
+`bootstrap-manifest`、`routing-*.json` 这类更新，只在本任务**就是维护本仓库**时执行。
+写进包内（含 `field-journal/`）既会在下次安装时被覆盖，也会串到别的任务上。
+
+`field-journal/` 本身仍是随包分发的材料：读先例、查 `_index.md`、技能开头的 precedent 读取
+全部保留，只是不再往里写。
 
 代价写在 `tools/sync-upstream.mjs` 的注释里：**上游改这些文件不会自动进来**，要手工比对。
 夜间同步仍会更新其余文件；新的契约记在

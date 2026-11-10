@@ -246,23 +246,22 @@
      - 至少 1 张流程图嵌入报告
      - 类型选择：渗透→攻击路径图 / 逆向→调用关系图 / JS→时序图 / CTF→解题流程
 
-□ 3. 回写 field-journal（已脱敏）
-     - 按 field-journal/_template.md 格式
+□ 3. 把本次经验写到当前工作对象的 `notes/`（默认 `work/<case>/notes/`，已脱敏）
+     - 按 `field-journal/_template.md` 格式
      - 必须包含：踩坑记录、可复用模式、工具链发现、环境信息
      - 脱敏检查：无真实域名/IP/Token/用户名
+     - **不写进 skill 包**：包内目录（含 `field-journal/`）只读，写入会被下一次安装覆盖，也会跨任务影响别的分析
 
 □ 4. 沉淀搜索到的知识（如果本次任务中联网搜索过）
-     - 将搜索到的有价值内容写入对应 skill 的 references/
-     - 标注来源 URL 和日期
-     - 如果发现了新工具 → 更新 bootstrap-manifest
-     - 如果发现了新场景 → 先更新 routing-benchmark.json，再更新 routing.json；按需同步 MASTER-ROUTING.md 和 routing.md 附录
+     - 将搜索到的有价值内容写入当前工作对象的 `notes/`，标注来源 URL 和日期
+     - 仅当本任务就是维护本仓库时：发现新工具 → 更新 bootstrap-manifest；发现新场景 → 先更新 routing-benchmark.json，再更新 routing.json，按需同步 MASTER-ROUTING.md 和 routing.md 附录
 
 □ 5. 询问社区贡献
      - "是否将本次经验贡献到社区主仓库？数据已脱敏，只提交 field-journal 文件。"
      - 用户同意 → 按 CONTRIBUTE-BACK.md 流程创建 PR
      - 用户拒绝 → 跳过
 
-□ 6. 更新系统索引
+□ 6. 更新系统索引（仅当本任务就是维护本仓库）
      - 更新 field-journal/_index.md（新增条目）
      - 检查是否需要更新：routing.json / routing-benchmark / MASTER-ROUTING.md / routing.md 附录 / bootstrap-manifest / tool-index
      - 如果发现新工具或新场景 → 执行对应更新
@@ -311,8 +310,8 @@
 
 ## 多任务与中断处理
 
-- 如果用户在任务执行中切换话题，先保存当前进度到 field-journal（标记为"未完成"）
-- 用户回来继续时，从 field-journal 恢复上下文
+- 如果用户在任务执行中切换话题，先把当前进度保存到当前工作对象的 `notes/`（标记为"未完成"）
+- 用户回来继续时，从该 `notes/` 文件恢复上下文
 - 如果用户同时给出多个安全任务，按优先级逐个执行，不要并行（避免工具冲突）
 - 长时间任务（如大文件 IDA 分析）要定期汇报进度，不要让用户以为卡死了
 
@@ -412,14 +411,14 @@ gamma -> --destructive false
 
 | 场景 | 搜索什么 | 搜索后做什么 |
 |------|---------|-------------|
-| 遇到未知壳/保护/混淆 | 搜索该壳的脱壳方法和工具 | 将方法写入对应 skill 的 references/ |
-| 遇到未知框架/协议 | 搜索逆向/渗透该框架的方法 | 写入 references/ 或提议新增 skill |
-| 工具报错/不兼容 | 搜索错误信息 + 版本兼容性 | 写入 field-journal 踩坑记录 |
-| 发现新 CVE/漏洞 | 搜索 PoC 和利用方法 | 写入 pentest-tools/references/ |
+| 遇到未知壳/保护/混淆 | 搜索该壳的脱壳方法和工具 | 写入当前工作对象的 `notes/`（包内 `references/` 仅当本任务就是维护本仓库） |
+| 遇到未知框架/协议 | 搜索逆向/渗透该框架的方法 | 写入当前工作对象的 `notes/`，或提议新增 skill |
+| 工具报错/不兼容 | 搜索错误信息 + 版本兼容性 | 写入当前工作对象的 `notes/` 踩坑记录 |
+| 发现新 CVE/漏洞 | 搜索 PoC 和利用方法 | 写入当前工作对象的 `notes/`（包内 `pentest-tools/references/` 仅当本任务就是维护本仓库） |
 | 路由未命中（全新场景） | 搜索该领域的方法论和工具 | 提议新增 skill 并附上搜索到的资料 |
-| 需要特定 Frida 脚本 | 搜索 GitHub/CodeShare 上的现成脚本 | 写入 apk-reverse/references/ 或直接使用 |
-| 需要特定 payload | 搜索 PayloadsAllTheThings/HackTricks | 写入 pentest-tools/payloads/ |
-| 工具版本过旧 | 搜索最新版本和 breaking changes | 更新 bootstrap-manifest 和文档 |
+| 需要特定 Frida 脚本 | 搜索 GitHub/CodeShare 上的现成脚本 | 写入当前工作对象的 `notes/`，或直接使用 |
+| 需要特定 payload | 搜索 PayloadsAllTheThings/HackTricks | 写入当前工作对象的 `notes/`（包内 `pentest-tools/payloads/` 仅当本任务就是维护本仓库） |
+| 工具版本过旧 | 搜索最新版本和 breaking changes | 仅当本任务就是维护本仓库时：更新 bootstrap-manifest 和文档 |
 
 ### 搜索后的知识沉淀流程
 
@@ -427,10 +426,10 @@ gamma -> --destructive false
 1. 搜索获取信息
 2. 验证信息可靠性（优先官方文档 > GitHub > 博客 > 论坛）
 3. 提取可操作的内容（命令/脚本/配置/步骤）
-4. 写入本包对应位置：
+4. 写入本包对应位置（**仅当本任务就是维护本仓库**）：
    - 通用方法论 → 对应 skill 的 references/*.md
    - 特定工具用法 → 对应 skill 的 references/ 或 SKILL.md
-   - 踩坑经验 → field-journal/
+   - 踩坑经验 → 当前工作对象的 `notes/`（默认；包内 `field-journal/` 不写）
    - 新工具发现 → bootstrap-manifest.json + ToolDiscovery.ps1
    - 新场景发现 → routing-benchmark.json + routing.json；同步 MASTER-ROUTING.md，必要时补 routing.md 附录
 5. 标注来源（URL + 日期），便于后续验证时效性

@@ -178,12 +178,14 @@ Windows 探测结果为 `manual-required` 时，记录里带 `hint` 与 `docs_ur
 
 ## 自动进化
 
-每次完成逆向/渗透任务后，必须回写经验到 `field-journal/` 目录。详见 `RULES.md` 的"任务完成后的硬性 Checklist"。
+每次完成逆向/渗透任务后，把经验写到**当前工作对象**的 `notes/`（默认 `work/<case>/notes/`，已脱敏），
+不要写进 skill 包。详见 `RULES.md` 的"任务完成后的硬性 Checklist"。
 
 - 模板：`field-journal/_template.md`
 - 索引：`field-journal/_index.md`
 - 先例：`field-journal/precedent-auth.md` → `precedent-reverse.md` → `precedent-pentest.md`
 - 新任务开始前先查索引和先例，复用已有经验
+- 包内 `field-journal/` 是随包分发的**只读**材料：可以读，不要写（写入会被下次安装覆盖，也会串到别的任务）
 
 ## 任务完成自检（声称完成前 MUST 通过）
 

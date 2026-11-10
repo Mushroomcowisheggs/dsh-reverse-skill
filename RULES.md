@@ -179,10 +179,12 @@ After task completion (vulnerability verified / reverse complete / flag captured
 ```text
 □ 1. Generate formal report (docs-generator skill)
 □ 2. Generate diagram (diagram-generator skill) — at least 1 flowchart
-□ 3. Write back to field-journal (anonymized)
-□ 4. Persist searched knowledge to references/ (if web searched during task)
+□ 3. Write task notes to the current work target's `notes/` (default `work/<case>/notes/`, anonymized)
+     — the skill package is read-only: package-internal directories (including `field-journal/`) are never written to
+□ 4. Persist searched knowledge to the current work target's `notes/` (if web searched during task)
+     — package-internal updates (bootstrap-manifest, routing-*.json, MASTER-ROUTING.md) only when this task IS maintaining this repository
 □ 5. Ask about community contribution
-□ 6. Update system indexes (_index.md, routing.md if new scenario found)
+□ 6. Update system indexes (_index.md, routing.md if new scenario found) — only when this task IS maintaining this repository
 ```
 
 ---
@@ -268,8 +270,8 @@ Before saying "task complete" or "done", MUST self-check:
 
 ## Multi-Task & Interrupt Handling
 
-- If user switches topic mid-task, save current progress to field-journal (mark as "incomplete")
-- When user returns, restore context from field-journal
+- If user switches topic mid-task, save current progress to the current work target's `notes/` (mark as "incomplete")
+- When user returns, restore context from that `notes/` file
 - Multiple security tasks given simultaneously → execute sequentially by priority (avoid tool conflicts)
 - Long-running tasks (e.g., large file IDA analysis) → report progress periodically, don't let user think it's stuck
 
@@ -312,10 +314,10 @@ When AI has web search capability, **MUST proactively search** in these scenario
 
 | Scenario | Search For | After Search |
 |----------|-----------|--------------|
-| Unknown packer/protection/obfuscation | Unpacking methods and tools | Write to skill's references/ |
-| Unknown framework/protocol | Reverse/pentest methodology | Write to references/ or propose new skill |
-| Tool error/incompatibility | Error message + version compatibility | Write to field-journal |
-| New CVE/vulnerability discovered | PoC and exploitation method | Write to pentest-tools/references/ |
+| Unknown packer/protection/obfuscation | Unpacking methods and tools | Write to the current work target's `notes/` (package `references/` only when maintaining this repository) |
+| Unknown framework/protocol | Reverse/pentest methodology | Write to the current work target's `notes/`, or propose a new skill |
+| Tool error/incompatibility | Error message + version compatibility | Write to the current work target's `notes/` |
+| New CVE/vulnerability discovered | PoC and exploitation method | Write to the current work target's `notes/` (package `pentest-tools/references/` only when maintaining this repository) |
 | Route not matched (new scenario) | Domain methodology and tools | Propose new skill with search results |
 
 ---
