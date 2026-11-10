@@ -119,6 +119,25 @@ if (-not (Test-Path -LiteralPath $encodingTest)) {
     }
 }
 
+# --- 3b) detect-only bootstrap contract ---
+# The Windows bootstrap must never install tools or write a user profile
+# directory; test-bootstrap-detect-only.ps1 asserts exactly that.
+$detectOnlyTest = Join-Path $scriptDir 'test-bootstrap-detect-only.ps1'
+if (-not (Test-Path -LiteralPath $detectOnlyTest)) {
+    Bad 'test-bootstrap-detect-only.ps1 missing'
+} else {
+    $detectOnlyLog = Join-Path $LogDir '03b-detect-only.txt'
+    & $SmokeHostExe -NoProfile -ExecutionPolicy Bypass -File $detectOnlyTest `
+        -ScratchDir (Join-Path $LogDir 'detect-only') 2>&1 |
+        Tee-Object -FilePath $detectOnlyLog | Out-Null
+    $detectOnlyExit = $LASTEXITCODE
+    if ($detectOnlyExit -eq 0) {
+        Ok 'detect-only bootstrap contract'
+    } else {
+        Bad ("detect-only bootstrap regression exit {0}" -f $detectOnlyExit)
+    }
+}
+
 # --- 4) master-route sample matrix ---
 $mr = Join-Path $scriptDir 'master-route.ps1'
 $cases = @(

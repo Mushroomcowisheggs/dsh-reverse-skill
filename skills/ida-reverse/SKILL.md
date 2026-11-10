@@ -348,13 +348,13 @@ idapro_rename(batch={"func": [{"addr": "函数地址", "name": "有意义的名�
 
 ## 按需自举（On-Demand Bootstrap）
 
-本 skill 的入口脚本已接入统一自举系统。
+本 skill 的入口脚本已接入统一自举探测（只探测并报告，不安装工具）。
 
 ### 自动化能力边界
 
 | 工具 | 可自动安装 | 安装方式 | 说明 |
 |------|-----------|---------|------|
-| idalib-mcp | ✓ | pip install (from GitHub) | `start.ps1` 缺失时自动安装 |
+| idalib-mcp | ✗ | pip install (from GitHub) | 由操作者安装，并确保可执行文件在 PATH 上 |
 | IDA Pro 本体 | ✗ | 商业软件，需手动安装 | 设置 `IDADIR` 环境变量指向安装目录 |
 
 ### 安装步骤（已验证）
@@ -381,8 +381,8 @@ ida-pro-mcp --config
 
 ### 自举触发点
 
-- `scripts/start.ps1`：缺 `idalib-mcp` 时自动调用 `bootstrap-reverse.ps1`
-- MCP 注册：bootstrap 会自动把 `idapro` 写入 Claude MCP 配置
+- `scripts/start.ps1`：缺 `idalib-mcp` 时调用 `bootstrap-reverse.ps1` 探测；仍然缺失就报错，由操作者安装
+- MCP 注册：只有显式传 `-McpHostTarget Claude|Codex|Both` 时，bootstrap 才会把 `idapro` 写入该客户端的 MCP 配置；默认不写任何客户端配置
 
 ### 前置条件
 
@@ -390,7 +390,7 @@ ida-pro-mcp --config
 - 推荐使用 IDA 自带 Python314 中的 `ida-pro-mcp`（便携版已内置）
 - 常见本机配置：
   - User env `IDADIR` → IDA 安装目录（含 `ida.exe`）
-  - 可选 `~\Tools\bin\idalib-mcp.cmd` / `ida-pro-mcp.cmd` 包装器
+  - 可选自定义包装器 `idalib-mcp.cmd` / `ida-pro-mcp.cmd`，由操作者放到 PATH 目录中
   - 客户端 MCP 服务器名只留 `idapro` → `http://127.0.0.1:13337/mcp`
 
 

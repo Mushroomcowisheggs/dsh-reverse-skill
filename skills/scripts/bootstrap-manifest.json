@@ -15,9 +15,8 @@
       "bootstrapKind": "github-release-zip",
       "repo": "skylot/jadx",
       "assetRegex": "^jadx-1\\.5\\.6\\.zip$",
-      "installDir": "%USERPROFILE%\\Tools\\jadx",
       "docsUrl": "https://github.com/skylot/jadx",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "jadx",
       "releaseTag": "v1.5.6",
       "assetSha256": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974"
@@ -27,10 +26,9 @@
       "bootstrapKind": "github-release-jar-wrapper",
       "repo": "iBotPeaches/Apktool",
       "assetRegex": "^apktool_3\\.0\\.2\\.jar$",
-      "installDir": "%USERPROFILE%\\Tools\\apktool",
       "wrapperName": "apktool.bat",
       "docsUrl": "https://apktool.org/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "apktool",
       "releaseTag": "v3.0.2",
       "assetSha256": "eee4669a704a14e0623407e6701b0b91887e61e1e4049cb7a82833e14ae8b5fd"
@@ -49,7 +47,7 @@
       "pipPackage": "frida-tools==14.10.4",
       "pinnedVersion": "14.10.4",
       "docsUrl": "https://frida.re/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "frida"
     },
     {
@@ -58,7 +56,7 @@
       "pipPackage": "frida-tools==14.10.4",
       "pinnedVersion": "14.10.4",
       "docsUrl": "https://frida.re/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "frida-ps"
     },
     {
@@ -68,7 +66,7 @@
       "pipSource": "git+https://github.com/mrexodia/ida-pro-mcp.git@f82e6e2517a161b77e738951c3071cd446480ba0",
       "pinnedCommit": "f82e6e2517a161b77e738951c3071cd446480ba0",
       "docsUrl": "https://github.com/mrexodia/ida-pro-mcp",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "ida-pro-mcp",
       "postInstallSteps": [
         "ida-pro-mcp --install (选择 Streamable HTTP + Global)",
@@ -100,7 +98,7 @@
       ],
       "mcpEnv": {},
       "docsUrl": "https://github.com/reqable/reqable-mcp-server",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "npx",
       "pinnedVersion": "1.0.1",
       "note": "Requires the separately installed Reqable desktop application. The MCP server uses Reqable's local API; scope and authorization rules still apply to captured or replayed traffic."
@@ -121,7 +119,7 @@
         "JSHOOK_BASE_PROFILE": "search"
       },
       "docsUrl": "https://github.com/vmoranv/jshookmcp",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "npx",
       "pinnedVersion": "0.3.4"
     },
@@ -133,7 +131,7 @@
       ],
       "mcpUrl": "https://xquik.com/mcp",
       "docsUrl": "https://docs.xquik.com/mcp/overview",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "pinPolicy": "remote-service-no-local-install",
       "verificationMode": "registration-only",
       "note": "Registers the first-party remote MCP URL only. OAuth is completed in the selected MCP client. No local package, bridge, or credential is installed."
@@ -142,10 +140,6 @@
       "name": "anything-analyzer",
       "bootstrapKind": "local-http-mcp",
       "repoUrl": "https://github.com/Mouseww/anything-analyzer",
-      "installDir": "%USERPROFILE%\\Tools\\anything-analyzer",
-      "startupDirCandidates": [
-        "%USERPROFILE%\\Tools\\anything-analyzer"
-      ],
       "startCommand": "pnpm",
       "startArgs": [
         "dev"
@@ -157,7 +151,7 @@
       "mcpUrl": "http://localhost:23816/mcp",
       "servicePort": 23816,
       "docsUrl": "https://github.com/Mouseww/anything-analyzer",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "pinnedCommit": "0ed4791688e5186da051c85eb7ddfe4639e14fd2",
       "verificationMode": "service-or-registration"
     },
@@ -179,7 +173,7 @@
       "portNote": "IDA 多实例时端口递增 (13337→13338→...)，检查 IDA Output 窗口的 [MCP] port=xxxxx 日志",
       "startScript": "%SKILL_ROOT%\\ida-reverse\\scripts\\start.ps1",
       "docsUrl": "https://hex-rays.com/ida-pro/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verificationMode": "service-and-registration"
     },
     {
@@ -187,9 +181,8 @@
       "bootstrapKind": "github-release-zip",
       "repo": "radareorg/radare2",
       "assetRegex": "^radare2-.*-w64\\.zip$",
-      "installDir": "%USERPROFILE%\\Tools\\radare2",
       "docsUrl": "https://github.com/radareorg/radare2",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "r2",
       "preferApiDigest": true,
       "note": "radare2 发版频繁，不 pin assetSha256；改用 GitHub API digest（sha256:...）动态校验，格式已实测兼容 Assert-DownloadedFileIntegrity。"
@@ -199,9 +192,8 @@
       "bootstrapKind": "github-release-zip",
       "repo": "radareorg/radare2",
       "assetRegex": "^radare2-.*-w64\\.zip$",
-      "installDir": "%USERPROFILE%\\Tools\\radare2",
       "docsUrl": "https://github.com/radareorg/radare2",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "rabin2",
       "preferApiDigest": true,
       "note": "与 r2 同一发布资产，API digest 动态校验（见 r2.note）。"
@@ -211,9 +203,8 @@
       "bootstrapKind": "winget-package",
       "wingetId": "Google.PlatformTools",
       "pinPolicy": "winget-latest",
-      "installDir": "%LOCALAPPDATA%\\Android\\Sdk\\platform-tools",
       "docsUrl": "https://developer.android.com/tools/releases/platform-tools",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "adb"
     },
     {
@@ -222,9 +213,8 @@
       "npmPackage": "agent-browser@0.31.1",
       "pinnedVersion": "0.31.1",
       "postInstall": "npx playwright install chromium",
-      "installDir": "%LOCALAPPDATA%\\ms-playwright",
       "docsUrl": "https://github.com/nicepkg/agent-browser",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "agent-browser",
       "setupScript": "%SKILL_ROOT%\\browser-automation\\scripts\\setup.ps1"
     },
@@ -233,9 +223,8 @@
       "bootstrapKind": "github-release-zip",
       "repo": "NationalSecurityAgency/ghidra",
       "assetRegex": "^ghidra_.*_PUBLIC_.*\\.zip$",
-      "installDir": "%USERPROFILE%\\Tools\\ghidra",
       "docsUrl": "https://ghidra-sre.org/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "analyzeHeadless",
       "postInstallSteps": [
         "下载 GhidraMCP 插件: https://github.com/LaurieWired/GhidraMCP/releases",
@@ -256,24 +245,18 @@
       "bootstrapKind": "git-clone",
       "repo": "https://github.com/danielmiessler/SecLists.git",
       "pinnedCommit": "e5e49caa6fb648476f3bca391b26a45a4f5d3f13",
-      "installDir": "%USERPROFILE%\\Tools\\SecLists",
       "docsUrl": "https://github.com/danielmiessler/SecLists",
-      "canAutoInstall": true
+      "canAutoInstall": false
     },
     {
       "name": "proxycat",
       "bootstrapKind": "git-clone",
       "repo": "https://github.com/honmashironeko/ProxyCat.git",
       "pinnedCommit": "2309b713e2e4f574df14c2ace7e8fa6c00eb6941",
-      "installDir": "%USERPROFILE%\\Tools\\ProxyCat",
       "docsUrl": "https://github.com/honmashironeko/ProxyCat",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "proxycat",
-      "postInstallSteps": [
-        "git clone https://github.com/honmashironeko/ProxyCat.git %USERPROFILE%\\Tools\\ProxyCat",
-        "pip install -r %USERPROFILE%\\Tools\\ProxyCat\\requirements.txt",
-        "使用 %USERPROFILE%\\Tools\\bin\\proxycat.bat 启动"
-      ]
+      "manualInstallHint": "ProxyCat is operator-installed: clone https://github.com/honmashironeko/ProxyCat, run pip install -r requirements.txt in that checkout, then expose proxycat on PATH."
     },
     {
       "name": "burpsuite-mcp",
@@ -294,7 +277,7 @@
       "wingetId": "Insecure.Nmap",
       "pinPolicy": "winget-latest",
       "docsUrl": "https://nmap.org/",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "nmap"
     },
     {
@@ -312,7 +295,7 @@
         "serve"
       ],
       "docsUrl": "https://github.com/Armur-Ai/Pentest-Swarm-AI",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "pentestswarm",
       "note": "群体智能渗透框架。需要 Go 1.24+ 或 Docker。支持 MCP server 模式。需要 Claude/Ollama API key。",
       "pinnedVersion": "v0.1.0"
@@ -331,7 +314,7 @@
       "wingetId": "VirusTotal.YARA",
       "pinPolicy": "winget-latest",
       "docsUrl": "https://github.com/VirusTotal/yara",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "yara"
     },
     {
@@ -340,7 +323,7 @@
       "pipPackage": "pwntools==4.15.0",
       "pinnedVersion": "4.15.0",
       "docsUrl": "https://github.com/Gallopsled/pwntools",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "pwn"
     },
     {
@@ -348,9 +331,8 @@
       "bootstrapKind": "github-release-zip",
       "repo": "kimci86/bkcrack",
       "assetRegex": "^bkcrack-1\\.8\\.1-win64\\.zip$",
-      "installDir": "%USERPROFILE%\\Tools\\bkcrack",
       "docsUrl": "https://github.com/kimci86/bkcrack",
-      "canAutoInstall": true,
+      "canAutoInstall": false,
       "verifyCommand": "bkcrack",
       "releaseTag": "v1.8.1",
       "preferApiDigest": true

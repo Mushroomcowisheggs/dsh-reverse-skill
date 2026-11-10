@@ -28,14 +28,14 @@ function Get-RequiredToolSpec {
 
     $spec = Resolve-ReverseToolSpec -Name $Name
     if (-not $spec.Available) {
-        # Attempt auto-bootstrap
+        # Ask the detect-only bootstrap what is missing; it never installs.
         if (Test-Path -LiteralPath $bootstrapScript) {
-            Write-Output "INFO: $Name not found, attempting auto-bootstrap..."
+            Write-Output "INFO: $Name not found, running bootstrap detection..."
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @($Name) -SkipRefresh
             $spec = Resolve-ReverseToolSpec -Name $Name
         }
         if (-not $spec.Available) {
-            throw "缺少命令：$Name — 自动安装失败，请手动安装。参考: https://github.com/radareorg/radare2"
+            throw "缺少命令：$Name — 未在 PATH 上找到。本包不安装工具，请自行安装后重试。参考: https://github.com/radareorg/radare2"
         }
     }
     return $spec

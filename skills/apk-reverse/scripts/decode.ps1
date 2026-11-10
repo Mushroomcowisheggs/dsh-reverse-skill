@@ -66,36 +66,17 @@ if (-not (Test-Path -LiteralPath $ApkPath)) {
 
 $jadxSpec = $null
 $apktoolSpec = $null
-$bootstrapScript = Join-Path $PSScriptRoot '..\..\scripts\bootstrap-reverse.ps1'
 
 if (-not $SkipJadx) {
     $jadxSpec = Resolve-ReverseToolSpec -Name 'jadx'
     if (-not $jadxSpec.Available) {
-        Write-Host 'INFO: jadx not found, attempting auto-bootstrap...' -ForegroundColor Yellow
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @('jadx') -SkipRefresh
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Bootstrap failed for jadx. Please install manually: https://github.com/skylot/jadx'
-        }
-        $jadxSpec = Resolve-ReverseToolSpec -Name 'jadx'
-        if (-not $jadxSpec.Available) {
-            throw 'jadx still not available after bootstrap. Check installation at %USERPROFILE%\Tools\jadx\'
-        }
-        Write-Host 'INFO: jadx bootstrapped successfully.' -ForegroundColor Green
+        throw 'jadx is not on PATH. Install it yourself (https://github.com/skylot/jadx), then re-run; this package does not install tools.'
     }
 }
 if (-not $SkipApktool) {
     $apktoolSpec = Resolve-ReverseToolSpec -Name 'apktool'
     if (-not $apktoolSpec.Available) {
-        Write-Host 'INFO: apktool not found, attempting auto-bootstrap...' -ForegroundColor Yellow
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @('apktool') -SkipRefresh
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Bootstrap failed for apktool. Please install manually: https://apktool.org/'
-        }
-        $apktoolSpec = Resolve-ReverseToolSpec -Name 'apktool'
-        if (-not $apktoolSpec.Available) {
-            throw 'apktool still not available after bootstrap. Check installation at %USERPROFILE%\Tools\apktool\'
-        }
-        Write-Host 'INFO: apktool bootstrapped successfully.' -ForegroundColor Green
+        throw 'apktool is not on PATH. Install it yourself (https://apktool.org/), then re-run; this package does not install tools.'
     }
 }
 

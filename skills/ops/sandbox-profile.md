@@ -6,6 +6,8 @@
 
 来源：`skills/scripts/bootstrap-manifest.json`（以文件为准）：
 
+Windows 侧只探测并报告：缺能力时记录为 `manual-required` 并给出 `hint`/`docs_url`，由操作者自行安装；不安装工具，也不写用户 profile 目录。
+
 | 能力 | 典型场景 |
 |------|----------|
 | jadx / apktool / adb / frida / frida-ps | Android |
@@ -18,6 +20,7 @@
 | binwalk / pwntools / yara | 固件/pwn/恶意 |
 
 ```powershell
+# Windows 侧只探测并报告，不安装；-StartServices 已废弃并被忽略，服务由操作者自行启动
 powershell -File skills\scripts\bootstrap-reverse.ps1 -Capability @('jadx','nmap','yara') -StartServices
 powershell -File skills\scripts\refresh-tool-index.ps1
 ```

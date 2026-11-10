@@ -147,14 +147,9 @@ function Stop-IdaMcpManagedProcess {
 
 function Get-PortableIdaCandidates {
     $desktop = [Environment]::GetFolderPath('Desktop')
-    $userProfile = $env:USERPROFILE
     return @(
         (Join-Path $desktop 'IDA Pro 9.4\App\IDA Pro'),
         (Join-Path $desktop 'IDA Pro\App\IDA Pro'),
-        (Join-Path $userProfile 'Desktop\IDA Pro 9.4\App\IDA Pro'),
-        (Join-Path $userProfile 'Tools\IDA Pro 9.4\App\IDA Pro'),
-        (Join-Path $userProfile 'Tools\IDA Pro\App\IDA Pro'),
-        (Join-Path $userProfile 'Tools\IDA'),
         'C:\Program Files\IDA Professional 9.4',
         'C:\Program Files\IDA Pro 9.4',
         'C:\Program Files\IDA Pro',
@@ -312,15 +307,6 @@ function Find-IdalibServer {
         }
     }
 
-    foreach ($candidate in @(
-        (Join-Path $env:USERPROFILE 'Tools\bin\idalib-mcp.cmd'),
-        (Join-Path $env:USERPROFILE 'Tools\bin\ida-pro-mcp.cmd')
-    )) {
-        if (Test-Path -LiteralPath $candidate) {
-            return @{ Mode = 'exe'; Path = $candidate }
-        }
-    }
-
     $roamingPython = Join-Path $env:APPDATA 'Python'
     if (Test-Path -LiteralPath $roamingPython) {
         $candidate = Get-ChildItem -LiteralPath $roamingPython -Directory -ErrorAction SilentlyContinue |
@@ -386,18 +372,18 @@ $env:PATH = "$IdaDir;$idaPythonDir;$(Join-Path $idaPythonDir 'Scripts');$env:PAT
 
 $server = Find-IdalibServer -IdaDirPath $IdaDir -PreferredServerPath $ServerPath
 
-# Auto-bootstrap only if still missing
+# Ask the detect-only bootstrap what is missing; it never installs.
 if (-not $server) {
     $bootstrapScript = Join-Path $PSScriptRoot '..\..\scripts\bootstrap-reverse.ps1'
     if (Test-Path -LiteralPath $bootstrapScript) {
-        Write-Output "INFO: ida-pro-mcp not found, attempting auto-bootstrap (installing mrexodia/ida-pro-mcp)..."
+        Write-Output "INFO: ida-pro-mcp not found, running bootstrap detection (no install)..."
         & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @('idalib-mcp') -SkipRefresh
         $server = Find-IdalibServer -IdaDirPath $IdaDir -PreferredServerPath $ServerPath
     }
 }
 
 if (-not $server) {
-    Write-Output 'ERR:Missing idalib-mcp — install into IDA Python: <IDADIR>\Python314\python.exe -m pip install git+https://github.com/mrexodia/ida-pro-mcp.git'
+    Write-Output 'ERR:Missing idalib-mcp — install it yourself into IDA Python: <IDADIR>\Python314\python.exe -m pip install git+https://github.com/mrexodia/ida-pro-mcp.git'
     exit 1
 }
 

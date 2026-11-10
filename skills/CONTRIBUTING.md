@@ -11,7 +11,7 @@
 1. `MUST` 在 `SKILL.md` 顶部加入 `ACTION REQUIRED` 区块，写清楚读完后立刻执行的 3-5 步。
 2. `MUST` 在 `SKILL.md` 末尾加入“任务完成自检”区块，未通过不得宣称完成。
 3. `MUST` 使用 RFC 2119 术语（`MUST/MUST NOT/SHOULD/MAY`），避免建议式语气。
-4. `MUST` 明确“缺工具唯一动作是 bootstrap”，禁止猜路径与手工乱装。
+4. `MUST` 明确“缺工具唯一动作是 bootstrap 探测”，禁止猜路径；安装由操作者完成。
 5. `MUST` 明确“路由未命中时需要提议新增 skill”，不要硬塞现有模块。
 ## 1. 什么时候该新增 skill
 
@@ -185,7 +185,7 @@ description: <一句话描述适用场景和触发条件>
   "name": "<tool-name>",
   "bootstrapKind": "<kind>",
   ...
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verifyCommand": "<tool-name>"
 }
 ```
@@ -194,12 +194,14 @@ description: <一句话描述适用场景和触发条件>
 
 | Kind | 适用场景 | 必填字段 |
 |------|---------|---------|
-| `github-release-zip` | GitHub Release 下载解压 | `repo`, `assetRegex`, `installDir` |
-| `github-release-jar-wrapper` | Java JAR + bat wrapper | `repo`, `assetRegex`, `installDir`, `wrapperName` |
+| `github-release-zip` | GitHub Release 下载解压（仅登记来源） | `repo`, `assetRegex` |
+| `github-release-jar-wrapper` | Java JAR + bat wrapper（仅登记来源） | `repo`, `assetRegex`, `wrapperName` |
 | `pip-package` | Python pip 安装 | `pipPackage` |
 | `npm-mcp` | npx 启动的 MCP server | `npmPackage`, `mcpNames`, `mcpCommand`, `mcpArgs` |
 | `local-http-mcp` | 本地 HTTP 服务型 MCP | `mcpUrl`, `servicePort` |
 | `winget-package` | Windows winget 安装 | `wingetId` |
+
+`canAutoInstall` 现在一律为 `false`：manifest 只登记能力、来源、`docsUrl` 等元数据，不登记落地目录（`installDir` 已移除）；安装由操作者完成。
 
 ### 4.2 在 `ToolDiscovery.ps1` 中注册工具
 
@@ -212,11 +214,12 @@ description: <一句话描述适用场景和触发条件>
     Purpose = '<中文用途说明>'
     VersionArgs = @('--version')
     Fallbacks = @(
-        [pscustomobject]@{ Type = 'command'; Value = '<tool-name>' },
-        [pscustomobject]@{ Type = 'path'; Value = (Join-Path $env:USERPROFILE 'Tools\<tool>\<executable>') }
+        [pscustomobject]@{ Type = 'command'; Value = '<tool-name>' }
     )
 }
 ```
+
+发现只从 PATH 与系统/厂商提供的 app-data 位置解析；不要添加用户 profile 下的自定义目录。
 
 ### 4.3 在 `refresh-tool-index.ps1` 中注册脚本引用
 
@@ -228,18 +231,18 @@ description: <一句话描述适用场景和触发条件>
 
 ### 4.4 在入口脚本中接入 bootstrap
 
-脚本中检测工具缺失时，调用 bootstrap 而不是直接 throw：
+脚本中检测工具缺失时，调用 bootstrap 只做探测并报告（`manual-required` 记录带 `hint`/`docs_url`），由操作者自行安装；不要代替操作者安装：
 
 ```powershell
 $bootstrapScript = Join-Path $PSScriptRoot '..\..\scripts\bootstrap-reverse.ps1'
 
 $spec = Resolve-ReverseToolSpec -Name '<tool-name>'
 if (-not $spec.Available) {
-    Write-Host 'INFO: <tool> not found, attempting auto-bootstrap...' -ForegroundColor Yellow
+    Write-Host 'INFO: <tool> not found, running bootstrap detection...' -ForegroundColor Yellow
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @('<tool-name>') -SkipRefresh
     $spec = Resolve-ReverseToolSpec -Name '<tool-name>'
     if (-not $spec.Available) {
-        throw '<tool> still not available after bootstrap. Install manually: <url>'
+        throw '<tool> is not on PATH. Install it yourself: <url>'
     }
 }
 ```
@@ -342,7 +345,7 @@ bash "<项目根目录>/kali/scripts/refresh-tool-index.sh"
 - [ ] `kali/RULES-kali.md` 触发关键词已更新
 
 **通用（继续）**：
-- [ ] 入口脚本已接入 bootstrap（缺工具时自动补齐）
+- [ ] 入口脚本已接入 bootstrap（缺工具时探测并提示操作者安装）
 - [ ] 运行 refresh-tool-index 后新工具出现在索引中
 
 ---
@@ -370,9 +373,8 @@ skills/ghidra-headless/
   "bootstrapKind": "github-release-zip",
   "repo": "NationalSecurityAgency/ghidra",
   "assetRegex": "^ghidra_.*_PUBLIC_.*\\.zip$",
-  "installDir": "%USERPROFILE%\\Tools\\ghidra",
   "docsUrl": "https://ghidra-sre.org/",
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verifyCommand": "analyzeHeadless"
 }
 ```
@@ -386,8 +388,7 @@ skills/ghidra-headless/
     Purpose = 'Ghidra 无头分析'
     VersionArgs = @()
     Fallbacks = @(
-        [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' },
-        [pscustomobject]@{ Type = 'path'; Value = (Join-Path $env:USERPROFILE 'Tools\ghidra\support\analyzeHeadless.bat') }
+        [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' }
     )
 }
 ```
@@ -430,7 +431,7 @@ skills/ghidra-headless/
     "ENV_VAR": "value"
   },
   "docsUrl": "https://github.com/...",
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verifyCommand": "npx"
 }
 ```
@@ -442,9 +443,7 @@ skills/ghidra-headless/
   "name": "<mcp-name>",
   "bootstrapKind": "local-http-mcp",
   "repoUrl": "https://github.com/xxx/yyy",
-  "installDir": "%USERPROFILE%\\Tools\\<project-name>",
   "startupDirCandidates": [
-    "%USERPROFILE%\\Tools\\<project-name>",
     "C:\\work\\<project-name>"
   ],
   "startCommand": "pnpm",
@@ -453,7 +452,7 @@ skills/ghidra-headless/
   "mcpUrl": "http://localhost:<port>/mcp",
   "servicePort": <port>,
   "docsUrl": "https://github.com/xxx/yyy",
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verificationMode": "service-or-registration"
 }
 ```
@@ -468,7 +467,7 @@ skills/ghidra-headless/
   "bootstrapKind": "pip-package",
   "pipPackage": "<package-name>",
   "docsUrl": "...",
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verifyCommand": "<executable>"
 },
 {
@@ -480,14 +479,14 @@ skills/ghidra-headless/
   "servicePort": <port>,
   "startScript": "%SKILL_ROOT%\\<skill-dir>\\scripts\\start.ps1",
   "docsUrl": "...",
-  "canAutoInstall": true,
+  "canAutoInstall": false,
   "verificationMode": "service-and-registration"
 }
 ```
 
 ### 10.3 编写 MCP 注册逻辑
 
-bootstrap 脚本已经内置了通用的 MCP 配置合并能力。对于标准类型，只需在 manifest 中声明即可，bootstrap 会自动：
+bootstrap 脚本已经内置了通用的 MCP 配置合并能力。对于标准类型，只需在 manifest 中声明即可；当显式传 `-McpHostTarget <客户端>` 时，bootstrap 会：
 
 1. 读取用户的 MCP 配置文件（如 `~/.claude/mcp.json`）
 2. 合并新的 server 条目（不覆盖已有配置）
@@ -552,7 +551,7 @@ Write-Output "ERR:timeout:$Port"
 ```markdown
 ### MCP 服务手动配置
 
-如果自动安装/启动失败，按以下步骤手动配置：
+如果 bootstrap 探测/启动失败，按以下步骤手动配置：
 
 1. [安装前置依赖]
 2. [获取项目/安装包]
@@ -583,7 +582,7 @@ MCP 配置示例：
 | Cursor | Cursor Settings → MCP |
 | Cline | Cline 设置面板 |
 
-当前 bootstrap 脚本默认写入 Claude Code 的配置路径。如果用户使用其他客户端，AI 应在引导中说明对应的配置位置。
+bootstrap 默认不写任何客户端配置；只有显式传 `-McpHostTarget Claude|Codex|Both` 时才写入对应客户端。如果用户使用其他客户端，AI 应在引导中说明对应的配置位置。
 
 ### 10.7 完整示例：新增一个假设的 "sqlmap-mcp" skill
 
@@ -605,7 +604,7 @@ MCP 配置示例：
 ```
 
 注意 `canAutoInstall: false` — 这表示 bootstrap 不会尝试自动安装，但会：
-- 自动注册 MCP URL 到配置
+- 在显式指定 `-McpHostTarget` 时注册 MCP URL 到该客户端配置
 - 检测端口是否在线
 - 如果不在线，输出 `manualInstallHint` 引导用户
 
@@ -615,7 +614,7 @@ MCP 配置示例：
 
 | 能力 | 可自动安装 | 方式 | 说明 |
 |------|-----------|------|------|
-| sqlmap-mcp | ✗（需 Docker） | docker run | AI 会自动注册 MCP URL，但需要用户手动启动容器 |
+| sqlmap-mcp | ✗（需 Docker） | docker run | 显式指定 `-McpHostTarget` 时会注册 MCP URL，但需要用户手动启动容器 |
 
 ### 手动启动
 \```powershell
@@ -633,7 +632,7 @@ docker run -d -p 8775:8775 xxx/sqlmap-mcp
 - [ ] `mcpUrl` 格式正确（含 `/mcp` 路径或实际 endpoint）
 - [ ] 如果是本地服务型，有 `scripts/start.ps1` 或等价启动脚本
 - [ ] SKILL.md 中有手动配置引导
-- [ ] `canAutoInstall` 准确反映是否真的能全自动（不要虚标）
+- [ ] `canAutoInstall` 保持 `false`（Windows 侧脚本不安装工具，不要标 `true`）
 - [ ] 运行 `refresh-tool-index.ps1` 后，capability 视图中能看到新 MCP 的注册和在线状态
 
 ---

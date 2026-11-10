@@ -41,10 +41,7 @@ if ([string]::IsNullOrWhiteSpace($IdaDir)) {
                 'C:\Program Files\IDA Professional 9.4',
                 'C:\Program Files\IDA Pro 9.4',
                 'C:\Program Files\IDA Pro',
-                (Join-Path $env:USERPROFILE 'Tools\IDAPro94'),
-                (Join-Path $env:USERPROFILE 'Tools\IDA Pro 9.4\App\IDA Pro'),
-                (Join-Path ([Environment]::GetFolderPath('Desktop')) 'IDA Pro 9.4\App\IDA Pro'),
-                (Join-Path $env:USERPROFILE 'Desktop\IDA Pro 9.4\App\IDA Pro')
+                (Join-Path ([Environment]::GetFolderPath('Desktop')) 'IDA Pro 9.4\App\IDA Pro')
             )
             $IdaDir = $candidates | Where-Object { Test-IdaInstallDir $_ } | Select-Object -First 1
         }

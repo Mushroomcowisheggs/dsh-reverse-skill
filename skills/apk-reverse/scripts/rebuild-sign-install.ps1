@@ -33,7 +33,8 @@ $ErrorActionPreference = 'Stop'
 $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 if ([string]::IsNullOrWhiteSpace($KeystorePath)) {
-    $KeystorePath = Join-Path (Join-Path $env:USERPROFILE '.android') 'debug.keystore'
+    $homePath = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+    $KeystorePath = Join-Path (Join-Path $homePath '.android') 'debug.keystore'
 }
 
 function Get-ToolPath {
@@ -52,15 +53,14 @@ function Get-ToolPath {
     }
 
     $fallbacks = @{
-        'apktool' = @(
-            (Join-Path $env:USERPROFILE 'Tools\apktool\apktool.bat')
-        )
+        # apktool is resolved from PATH only: this package never installs tools
+        # and never looks for them inside a user profile directory.
+        'apktool' = @()
         'zipalign' = @($buildTools | ForEach-Object { Join-Path $_.FullName 'zipalign.exe' })
         'apksigner' = @($buildTools | ForEach-Object { Join-Path $_.FullName 'apksigner.bat' })
         'keytool' = @()
         'adb' = @(
-            (Join-Path $sdkRoot 'platform-tools\adb.exe'),
-            (Join-Path $env:USERPROFILE 'AppData\Local\Android\Sdk\platform-tools\adb.exe')
+            (Join-Path $sdkRoot 'platform-tools\adb.exe')
         )
     }
 
@@ -72,29 +72,11 @@ function Get-ToolPath {
         }
     }
 
-    # Attempt auto-bootstrap for supported tools
-    $bootstrapScript = Join-Path $PSScriptRoot '..\..\scripts\bootstrap-reverse.ps1'
-    $bootstrapSupported = @('adb', 'apktool')
-    if ($Name -in $bootstrapSupported -and (Test-Path -LiteralPath $bootstrapScript)) {
-        Write-Host "INFO: $Name not found, attempting auto-bootstrap..." -ForegroundColor Yellow
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @($Name) -SkipRefresh
-        $cmd = Get-Command $Name -ErrorAction SilentlyContinue
-        if ($cmd) {
-            Write-Host "INFO: $Name bootstrapped successfully." -ForegroundColor Green
-            return $cmd.Source
-        }
-        # Re-check fallbacks after bootstrap
-        if ($fallbacks.Contains($Name)) {
-            foreach ($candidate in $fallbacks[$Name]) {
-                if (-not [string]::IsNullOrWhiteSpace($candidate) -and (Test-Path -LiteralPath $candidate)) {
-                    Write-Host "INFO: $Name found at fallback path after bootstrap." -ForegroundColor Green
-                    return $candidate
-                }
-            }
-        }
-    }
+    # Tools are resolved from PATH and from OS-provided SDK locations only. There
+    # is deliberately no install step here: installing tools belongs to the
+    # operator, and this package never writes into a user profile directory.
 
-    # Clear error message for tools that cannot be auto-bootstrapped
+    # Clear error message for tools that cannot be resolved
     $manualHint = switch ($Name) {
         'zipalign'  { 'Install Android Build-Tools via Android SDK Manager (sdkmanager "build-tools;35.0.0")' }
         'apksigner' { 'Install Android Build-Tools via Android SDK Manager (sdkmanager "build-tools;35.0.0")' }

@@ -65,6 +65,49 @@ const RENAMED_FILES = {
 };
 
 /**
+ * Upstream paths this package maintains itself instead of mirroring.
+ *
+ * The Windows bootstrap detects capabilities and reports what is missing; it
+ * never installs tools and never targets a user profile directory. Those files
+ * therefore diverge from upstream on purpose, and mirroring them would silently
+ * reintroduce the installer on the next sync.
+ *
+ * Excluding is used rather than copy-then-patch so there is exactly one rule:
+ * nothing here is overwritten, and every still-mirrored file keeps its
+ * byte-for-byte digest. The trade-off is that upstream edits to these paths do
+ * not flow in automatically - review them by hand when upstream changes.
+ */
+const LOCALLY_MAINTAINED_PATHS = new Set([
+  'skills/scripts/bootstrap-reverse.ps1',
+  'skills/scripts/bootstrap-manifest.json',
+  'skills/scripts/lib/BootstrapSupplyChain.ps1',
+  'skills/scripts/lib/ToolDiscovery.ps1',
+  'skills/scripts/test-bootstrap-supply-chain.ps1',
+  'skills/scripts/smoke.ps1',
+  'skills/apk-reverse/scripts/decode.ps1',
+  'skills/apk-reverse/scripts/frida-run.ps1',
+  'skills/apk-reverse/scripts/rebuild-sign-install.ps1',
+  'skills/browser-automation/scripts/setup.ps1',
+  'skills/ida-reverse/scripts/open.ps1',
+  'skills/ida-reverse/scripts/start-gui.ps1',
+  'skills/ida-reverse/scripts/start.ps1',
+  'skills/radare2/scripts/recon.ps1',
+  'skills/SKILL.md',
+  'skills/CONTRIBUTING.md',
+  'skills/apk-reverse/SKILL.md',
+  'skills/browser-automation/SKILL.md',
+  'skills/ida-reverse/SKILL.md',
+  'skills/radare2/SKILL.md',
+  'skills/ops/sandbox-profile.md',
+  'skills/ops/skill-supply-chain.md'
+]);
+
+/** Whether a posix path is maintained by this package rather than mirrored. */
+function isLocallyMaintained(relPosix) {
+  return LOCALLY_MAINTAINED_PATHS.has(relPosix);
+}
+
+/**
  * Upstream paths that are deliberately not vendored:
  *   .git, .github  repository plumbing rather than content
  *   plugins/       Codex adapter whose router duplicates skills/SKILL.md
@@ -125,6 +168,7 @@ const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'));
 
 /** Whether an upstream-relative posix path is vendored. */
 function isVendored(relPosix) {
+  if (isLocallyMaintained(relPosix)) return false;
   if (EXCLUDED_PATHS.has(relPosix)) return false;
   for (const excluded of EXCLUDED_PATHS) {
     if (relPosix.startsWith(excluded + '/')) return false;
@@ -284,7 +328,11 @@ const previous = previousManifest.files || {};
 const previousExecutable = previousManifest.executable || [];
 
 const added = Object.keys(next).filter((key) => previous[key] === undefined).sort();
-const removed = Object.keys(previous).filter((key) => next[key] === undefined).sort();
+// A locally maintained path is absent from `next` by design; it must never be
+// treated as "upstream deleted it" and pruned from the working tree.
+const removed = Object.keys(previous)
+  .filter((key) => next[key] === undefined && !isLocallyMaintained(key))
+  .sort();
 const changed = Object.keys(next)
   .filter((key) => previous[key] !== undefined && previous[key] !== next[key])
   .sort();

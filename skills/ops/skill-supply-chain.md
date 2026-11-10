@@ -10,7 +10,7 @@
 
 本包会：
 
-- 指导 AI **执行命令与 bootstrap 下载**
+- 指导 AI **执行命令与 bootstrap 探测**（Windows 侧只探测并报告，不安装工具）
 - 通过 MCP 接触本地与网络  
 - 写入 field-journal / 报告  
 
@@ -45,7 +45,7 @@
 
 | 动作 | 允许 | 禁止 |
 |------|------|------|
-| `bootstrap-reverse.ps1 -Capability X` | X ∈ bootstrap-manifest.json | 任意新 name 而不改 manifest |
+| `bootstrap-reverse.ps1 -Capability X`（只探测并报告，不安装） | X ∈ bootstrap-manifest.json | 任意新 name 而不改 manifest |
 | 注册 MCP | 用户确认 + tool-index 刷新 | 静默写入全局 MCP 指向未知 URL |
 | 跑社区 Python 一键 pentest | 授权 lab + 读源码后 | 直接生产目标 + 未知脚本 |
 

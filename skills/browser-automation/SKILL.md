@@ -187,19 +187,21 @@ npm run doctor:network
 
 ## 按需自举（On-Demand Bootstrap）
 
+`scripts/setup.ps1` 只检查并报告就绪状态（`status=ready` / `status=manual-required`）：缺 Node/agent-browser/Playwright 时以非零退出码给出安装提示；它不安装任何东西，安装由操作者完成。
+
 ### 自动化能力边界
 
 | 工具 | 可自动安装 | 安装方式 | 说明 |
 |------|-----------|---------|------|
-| Playwright | ✓ | npm + npx playwright install | 浏览器自动化引擎 |
-| agent-browser CLI | ✓ | npm install -g agent-browser | 浏览器操作 CLI |
-| Node.js | ✓ | winget | 前置依赖 |
+| Playwright | ✗ | npm + npx playwright install | 浏览器自动化引擎；由操作者安装 |
+| agent-browser CLI | ✗ | npm install -g agent-browser | 浏览器操作 CLI；由操作者安装 |
+| Node.js | ✗ | winget | 前置依赖；由操作者安装 |
 | OpenReverse | ✗ | 手动 clone + npm install | 实验阶段，依赖较重 |
 | mitmproxy | ✗ | 手动安装 | OpenReverse 网络观察依赖 |
 
 ### 自举触发
 
-- 浏览器操作缺 Playwright → 自动 bootstrap
+- 浏览器操作缺 Playwright → 运行 `scripts/setup.ps1` 报告缺哪一项，由操作者安装
 - 桌面操作需要 OpenReverse → 引导用户手动安装（给出完整步骤）
 
 ### OpenReverse 手动安装引导

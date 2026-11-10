@@ -103,6 +103,35 @@ pnpm test             # verify + 跑一遍 provider 契约
 在 Windows 与 Linux 上会算出相同结果 —— 即使本机 `core.autocrlf=true` 把工作树改成了 CRLF。
 这是夜间任务不会在无漂移时开出空 PR 的原因。
 
+### 本地自维护的文件（不从上游镜像）
+
+上游的 Windows 脚本会把工具装进 `%USERPROFILE%\Tools`。本包不做这件事：**装工具是操作者的职责**，
+本包只发现、只报告。这些文件因此与上游有意分叉，由本仓库自己维护 ——
+`tools/sync-upstream.mjs` 的 `LOCALLY_MAINTAINED_PATHS` 把它们排除出镜像，
+`tools/upstream-files.json` 也不再记录它们的摘要，所以 `pnpm run verify` 依然对得上：
+
+| 路径 | 为什么归本地 |
+|---|---|
+| `skills/scripts/bootstrap-reverse.ps1` | 检测并报告 capability；不再下载、安装、改 `PATH` |
+| `skills/scripts/bootstrap-manifest.json` | 去掉 `installDir`，全部 `canAutoInstall: false` |
+| `skills/scripts/lib/ToolDiscovery.ps1` | 发现只走 `PATH` 与系统事实位置，不探测 `%USERPROFILE%\Tools` |
+| `skills/scripts/lib/BootstrapSupplyChain.ps1` | 删除：整个文件只为安装服务 |
+| `skills/scripts/test-bootstrap-supply-chain.ps1` | 删除：它需要在 `%USERPROFILE%\Tools` 里造假仓库 |
+| `skills/scripts/test-bootstrap-detect-only.ps1` | 新增：把「不安装、不写用户目录」变成可执行断言 |
+| `skills/scripts/smoke.ps1` | 把上面那条断言接进 smoke 套件 |
+| `skills/apk-reverse/scripts/decode.ps1` · `frida-run.ps1` · `rebuild-sign-install.ps1` | 缺工具时给指引报错，不再自动 bootstrap |
+| `skills/browser-automation/scripts/setup.ps1` | 就绪检查；不再 winget/`npm install -g` 装东西 |
+| `skills/ida-reverse/scripts/open.ps1` · `start-gui.ps1` · `start.ps1` | 候选目录去掉 `%USERPROFILE%` 探测 |
+| `skills/radare2/scripts/recon.ps1` | 探测失败时的提示改成「自行安装」，不再自称自动安装 |
+| `skills/SKILL.md` · `skills/CONTRIBUTING.md` · `skills/apk-reverse/SKILL.md` · `skills/browser-automation/SKILL.md` · `skills/ida-reverse/SKILL.md` · `skills/radare2/SKILL.md` · `skills/ops/sandbox-profile.md` · `skills/ops/skill-supply-chain.md` | 文档改成「只探测、由操作者安装」，不再指导自动安装 |
+
+代价写在 `tools/sync-upstream.mjs` 的注释里：**上游改这些文件不会自动进来**，要手工比对。
+夜间同步仍会更新其余文件；新的契约记在
+[`.agents/notes/implemented/feature/2026-11-10-no-tool-installation.md`](./.agents/notes/implemented/feature/2026-11-10-no-tool-installation.md)。
+
+Linux / macOS / Kali 侧（`bootstrap-reverse.sh`、`kali/scripts/*`）**仍是安装式**：
+`REVERSE_SKILL_TOOLS_DIR` 覆盖根目录，默认 `$HOME/tools`。这条路本次没有改。
+
 ## 目录结构
 
 ```

@@ -110,6 +110,39 @@ Point it at an existing clone instead of the network with
 `.github/workflows/sync-upstream.yml` runs the same script nightly and opens a pull
 request when the corpus drifts; nothing is published automatically.
 
+### Files this package maintains itself (not mirrored)
+
+The upstream Windows scripts install tools into `%USERPROFILE%\Tools`. This package does
+not: **installing tools is the operator's job**, so the Windows side only detects and
+reports. Those files therefore diverge from upstream on purpose and are maintained here —
+`LOCALLY_MAINTAINED_PATHS` in `tools/sync-upstream.mjs` excludes them from the mirror and
+`tools/upstream-files.json` no longer records their digests, so `pnpm run verify` still
+matches:
+
+| Path | Why it is local |
+|---|---|
+| `skills/scripts/bootstrap-reverse.ps1` | detects and reports capabilities; no download, install, or `PATH` change |
+| `skills/scripts/bootstrap-manifest.json` | no `installDir`; every capability is `canAutoInstall: false` |
+| `skills/scripts/lib/ToolDiscovery.ps1` | discovery uses `PATH` and OS-provided locations only, never `%USERPROFILE%\Tools` |
+| `skills/scripts/lib/BootstrapSupplyChain.ps1` | deleted: the whole file existed to install |
+| `skills/scripts/test-bootstrap-supply-chain.ps1` | deleted: it needed a fake repo under `%USERPROFILE%\Tools` |
+| `skills/scripts/test-bootstrap-detect-only.ps1` | new: turns "no install, no user-directory writes" into assertions |
+| `skills/scripts/smoke.ps1` | runs that assertion as part of the smoke suite |
+| `skills/apk-reverse/scripts/decode.ps1` · `frida-run.ps1` · `rebuild-sign-install.ps1` | report what is missing instead of auto-bootstrapping |
+| `skills/browser-automation/scripts/setup.ps1` | readiness check; no winget / `npm install -g` |
+| `skills/ida-reverse/scripts/open.ps1` · `start-gui.ps1` · `start.ps1` | candidate lists drop the `%USERPROFILE%` probes |
+| `skills/radare2/scripts/recon.ps1` | failure hint says "install it yourself" instead of claiming an auto-install |
+| `skills/SKILL.md` · `skills/CONTRIBUTING.md` · `skills/apk-reverse/SKILL.md` · `skills/browser-automation/SKILL.md` · `skills/ida-reverse/SKILL.md` · `skills/radare2/SKILL.md` · `skills/ops/sandbox-profile.md` · `skills/ops/skill-supply-chain.md` | docs state "detect only, operator installs" instead of describing auto-install |
+
+The cost is spelled out in the `tools/sync-upstream.mjs` comment: **upstream edits to those
+files do not flow in automatically**. The nightly sync still updates everything else; the new
+contract is recorded in
+[`.agents/notes/implemented/feature/2026-11-10-no-tool-installation.md`](./.agents/notes/implemented/feature/2026-11-10-no-tool-installation.md).
+
+The Linux / macOS / Kali side (`bootstrap-reverse.sh`, `kali/scripts/*`) **still installs**:
+`REVERSE_SKILL_TOOLS_DIR` overrides the root, which defaults to `$HOME/tools`. That path was
+left unchanged.
+
 ## Layout
 
 ```

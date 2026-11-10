@@ -48,9 +48,6 @@ else {
         $desktop = [Environment]::GetFolderPath('Desktop')
         $idaCandidates = @(
             (Join-Path $desktop 'IDA Pro 9.4\App\IDA Pro'),
-            (Join-Path $env:USERPROFILE 'Desktop\IDA Pro 9.4\App\IDA Pro'),
-            (Join-Path $env:USERPROFILE 'Tools\IDA Pro 9.4\App\IDA Pro'),
-            (Join-Path $env:USERPROFILE 'Tools\IDA'),
             'C:\Program Files\IDA Professional 9.4',
             'C:\Program Files\IDA Pro 9.4',
             'C:\Program Files\IDA Pro',

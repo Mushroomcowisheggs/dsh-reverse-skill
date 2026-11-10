@@ -1,23 +1,6 @@
 ﻿Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function Get-ReverseUserProfilePath {
-    [CmdletBinding()]
-    param()
-
-    $profilePath = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
-    if (-not [string]::IsNullOrWhiteSpace($profilePath)) {
-        return $profilePath
-    }
-    if (-not [string]::IsNullOrWhiteSpace($HOME)) {
-        return $HOME
-    }
-    if (-not [string]::IsNullOrWhiteSpace($env:USERPROFILE)) {
-        return $env:USERPROFILE
-    }
-    throw 'Unable to resolve the current user profile path.'
-}
-
 function Join-ReverseOptionalPath {
     [CmdletBinding()]
     param(
@@ -38,7 +21,6 @@ function Get-ReverseToolCatalog {
     [CmdletBinding()]
     param()
 
-    $userProfile = Get-ReverseUserProfilePath
     $localAppData = [Environment]::GetEnvironmentVariable('LOCALAPPDATA')
     $appData = [Environment]::GetEnvironmentVariable('APPDATA')
 
@@ -50,8 +32,7 @@ function Get-ReverseToolCatalog {
             FixedVersion = 'v0.5.0'
             VersionArgs = @()
             Fallbacks = @(
-                [pscustomobject]@{ Type = 'command'; Value = 'jadx' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\jadx\bin\jadx.bat') }
+                [pscustomobject]@{ Type = 'command'; Value = 'jadx' }
             )
         }
         [pscustomobject]@{
@@ -61,9 +42,7 @@ function Get-ReverseToolCatalog {
             FixedVersion = 'v0.5.0'
             VersionArgs = @()
             Fallbacks = @(
-                [pscustomobject]@{ Type = 'command'; Value = 'apktool' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\apktool\apktool.bat') },
-                [pscustomobject]@{ Type = 'java-jar'; Value = (Join-Path $userProfile 'Tools\apktool\apktool.jar') }
+                [pscustomobject]@{ Type = 'command'; Value = 'apktool' }
             )
         }
         [pscustomobject]@{
@@ -113,13 +92,9 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('--help')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'idalib-mcp' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\bin\idalib-mcp.cmd') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Python\pythoncore-3.14-64\Scripts\idalib-mcp.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python314\Scripts\idalib-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python312\Scripts\idalib-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Desktop\IDA Pro 9.4\App\IDA Pro\Python314\Scripts\idalib-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path ([Environment]::GetFolderPath('Desktop')) 'IDA Pro 9.4\App\IDA Pro\Python314\Scripts\idalib-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\IDA Pro 9.4\App\IDA Pro\Python314\Scripts\idalib-mcp.exe') }
+                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python312\Scripts\idalib-mcp.exe') }
             )
         }
         [pscustomobject]@{
@@ -130,12 +105,9 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('--help')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'ida-pro-mcp' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\bin\ida-pro-mcp.cmd') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Python\pythoncore-3.14-64\Scripts\ida-pro-mcp.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python314\Scripts\ida-pro-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python312\Scripts\ida-pro-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Desktop\IDA Pro 9.4\App\IDA Pro\Python314\Scripts\ida-pro-mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path ([Environment]::GetFolderPath('Desktop')) 'IDA Pro 9.4\App\IDA Pro\Python314\Scripts\ida-pro-mcp.exe') }
+                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Programs\Python\Python312\Scripts\ida-pro-mcp.exe') }
             )
         }
         [pscustomobject]@{
@@ -148,10 +120,7 @@ function Get-ReverseToolCatalog {
                 [pscustomobject]@{ Type = 'command'; Value = 'ida' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\IDA Professional 9.4\ida.exe' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\IDA Pro 9.4\ida.exe' },
-                [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\IDA Pro\ida.exe' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Desktop\IDA Pro 9.4\App\IDA Pro\ida.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path ([Environment]::GetFolderPath('Desktop')) 'IDA Pro 9.4\App\IDA Pro\ida.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\IDA Pro 9.4\App\IDA Pro\ida.exe') }
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\IDA Pro\ida.exe' }
             )
         }
         [pscustomobject]@{
@@ -164,8 +133,7 @@ function Get-ReverseToolCatalog {
                 [pscustomobject]@{ Type = 'command'; Value = 'binaryninja' },
                 [pscustomobject]@{ Type = 'command'; Value = 'binaryninja-headless' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\Vector35\BinaryNinja\binaryninja.exe' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Vector35\BinaryNinja\binaryninja.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\BinaryNinja\binaryninja.exe') }
+                [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $localAppData -ChildPath 'Vector35\BinaryNinja\binaryninja.exe') }
             )
         }
         [pscustomobject]@{
@@ -198,12 +166,6 @@ function Get-ReverseToolCatalog {
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2' },
                 [pscustomobject]@{ Type = 'command'; Value = 'radare2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2.bat') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\radare2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2.bat') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\radare2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2.bat' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\radare2.exe' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2.exe' }
@@ -216,8 +178,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'rabin2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\rabin2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\rabin2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\rabin2.exe' }
             )
         }
@@ -228,8 +188,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'rasm2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\rasm2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\rasm2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\rasm2.exe' }
             )
         }
@@ -240,8 +198,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'radiff2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\radiff2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\radiff2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\radiff2.exe' }
             )
         }
@@ -252,8 +208,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'rahash2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\rahash2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\rahash2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\rahash2.exe' }
             )
         }
@@ -264,8 +218,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'rax2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\rax2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\rax2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\rax2.exe' }
             )
         }
@@ -276,8 +228,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2pm' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2pm.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2pm.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2pm.exe' }
             )
         }
@@ -288,8 +238,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('--version')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2xsql' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2xsql.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2xsql.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2xsql.exe' }
             )
         }
@@ -300,8 +248,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('--version')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2xsql-full' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2xsql-full.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2xsql-full.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2xsql-full.exe' }
             )
         }
@@ -312,8 +258,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2mcp' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2mcp.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2mcp.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2mcp.exe' }
             )
         }
@@ -324,8 +268,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'radius2' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\radius2.exe') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\radius2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\radius2.exe' }
             )
         }
@@ -410,9 +352,7 @@ function Get-ReverseToolCatalog {
             Purpose = 'Ghidra 无头分析（免费 IDA 替代）'
             VersionArgs = @()
             Fallbacks = @(
-                [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\support\analyzeHeadless.bat') },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\ghidra_11.3_PUBLIC\support\analyzeHeadless.bat') }
+                [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' }
             )
         }
         [pscustomobject]@{
@@ -422,8 +362,7 @@ function Get-ReverseToolCatalog {
             VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'jeb_wincon' },
-                [pscustomobject]@{ Type = 'command'; Value = 'jeb' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\JEB\jeb_wincon.exe') }
+                [pscustomobject]@{ Type = 'command'; Value = 'jeb' }
             )
         }
         [pscustomobject]@{
@@ -453,7 +392,6 @@ function Get-ReverseToolCatalog {
             Purpose = 'Security wordlists'
             VersionArgs = @()
             Fallbacks = @(
-                [pscustomobject]@{ Type = 'directory'; Value = (Join-Path $userProfile 'Tools\SecLists') },
                 [pscustomobject]@{ Type = 'directory'; Value = 'C:\Tools\SecLists' },
                 [pscustomobject]@{ Type = 'directory'; Value = '/usr/share/seclists' }
             )
@@ -518,7 +456,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('--version')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'bkcrack' },
-                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\bkcrack\bkcrack.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\bkcrack\bkcrack.exe' }
             )
         }
@@ -545,7 +482,6 @@ function Resolve-ReversePathTemplate {
 
     $resolved = $Value
     $replacements = @{
-        '%USERPROFILE%' = (Get-ReverseUserProfilePath)
         '%LOCALAPPDATA%' = [string]([Environment]::GetEnvironmentVariable('LOCALAPPDATA'))
         '%APPDATA%' = [string]([Environment]::GetEnvironmentVariable('APPDATA'))
         '%TEMP%' = [string]([Environment]::GetEnvironmentVariable('TEMP'))
@@ -694,8 +630,12 @@ function Get-ClaudeMcpConfigPath {
     if (-not [string]::IsNullOrWhiteSpace($env:CLAUDE_MCP_CONFIG)) {
         return $env:CLAUDE_MCP_CONFIG
     }
-    $profilePath = Get-ReverseUserProfilePath
-    return Join-Path (Join-Path $profilePath '.claude') 'mcp.json'
+    # Read-only view of a client config the user owns; never a place this package writes.
+    $homePath = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+    if ([string]::IsNullOrWhiteSpace($homePath)) {
+        return ''
+    }
+    return Join-Path (Join-Path $homePath '.claude') 'mcp.json'
 }
 
 function Get-CodexConfigPath {
@@ -705,8 +645,12 @@ function Get-CodexConfigPath {
     if (-not [string]::IsNullOrWhiteSpace($env:CODEX_CONFIG_PATH)) {
         return $env:CODEX_CONFIG_PATH
     }
-    $profilePath = Get-ReverseUserProfilePath
-    return Join-Path (Join-Path $profilePath '.codex') 'config.toml'
+    # Read-only view of a client config the user owns; never a place this package writes.
+    $homePath = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
+    if ([string]::IsNullOrWhiteSpace($homePath)) {
+        return ''
+    }
+    return Join-Path (Join-Path $homePath '.codex') 'config.toml'
 }
 
 function Get-ClaudeMcpServerNames {
@@ -714,7 +658,7 @@ function Get-ClaudeMcpServerNames {
     param()
 
     $configPath = Get-ClaudeMcpConfigPath
-    if (-not (Test-Path -LiteralPath $configPath)) {
+    if ([string]::IsNullOrWhiteSpace($configPath) -or -not (Test-Path -LiteralPath $configPath)) {
         return @()
     }
 
@@ -735,7 +679,7 @@ function Get-CodexMcpServerNames {
     param()
 
     $configPath = Get-CodexConfigPath
-    if (-not (Test-Path -LiteralPath $configPath)) {
+    if ([string]::IsNullOrWhiteSpace($configPath) -or -not (Test-Path -LiteralPath $configPath)) {
         return @()
     }
 

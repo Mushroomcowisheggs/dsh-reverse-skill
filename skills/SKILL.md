@@ -127,7 +127,7 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 
 新增 skill 时，按 `CONTRIBUTING.md` 的标准流程操作，确保：
 - 路由矩阵能正确分流
-- bootstrap 系统能自动补齐依赖
+- bootstrap 清单能登记新工具的能力定义
 - tool-index 能反映新工具状态
 
 ## 关联资源
@@ -140,7 +140,7 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 
 当 workflow 发现缺少工具时，不要直接报错。统一调用平台原生 bootstrap：
 
-Windows：
+Windows（只探测并报告，不安装；`-StartServices` 已废弃并被忽略，服务由操作者自行启动）：
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-root>\scripts\bootstrap-reverse.ps1" -Capability @('工具名') -StartServices
 ```
@@ -161,7 +161,9 @@ bash <package-root>/kali/scripts/bootstrap-reverse.sh 工具名 --start-services
 >
 > 清单中未登记的工具（如 unblob/EMBA 等）`MUST` 在 skill 文档中走手动安装步骤，禁止假装可 bootstrap。
 
-自举完成后会自动刷新 `tool-index`。
+Windows 探测结果为 `manual-required` 时，记录里带 `hint` 与 `docs_url`：由操作者自行安装该工具并确保它在 PATH 上；Windows 侧只做探测，不安装工具，也不写用户 profile 目录。
+
+探测完成后会自动刷新 `tool-index`（`-SkipRefresh` 可跳过）。
 
 ## 操作先例库（Precedent Files）
 

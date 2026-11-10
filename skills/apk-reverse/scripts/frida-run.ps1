@@ -67,24 +67,7 @@ function Get-ToolPath {
         }
     }
 
-    # Attempt auto-bootstrap for frida tools
-    $bootstrapScript = Join-Path $PSScriptRoot '..\..\scripts\bootstrap-reverse.ps1'
-    if (($Name -in @('frida', 'frida-ps', 'frida-ls-devices')) -and (Test-Path -LiteralPath $bootstrapScript)) {
-        Write-Host "INFO: $Name not found, attempting auto-bootstrap (pip install frida-tools)..." -ForegroundColor Yellow
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $bootstrapScript -Capability @('frida') -SkipRefresh
-        $cmd = Get-Command $Name -ErrorAction SilentlyContinue
-        if ($cmd) {
-            Write-Host "INFO: $Name bootstrapped successfully." -ForegroundColor Green
-            return $cmd.Source
-        }
-        foreach ($candidate in Get-PythonScriptCandidates -ExecutableName ($Name + '.exe')) {
-            if (Test-Path -LiteralPath $candidate) {
-                return $candidate
-            }
-        }
-    }
-
-    throw "Missing required CLI tool: $Name — install with: pip install frida-tools"
+    throw "Missing required CLI tool: $Name. Install frida-tools yourself (pip install frida-tools), then re-run; this package does not install tools."
 }
 
 $fridaLsDevices = Get-ToolPath -Name 'frida-ls-devices'

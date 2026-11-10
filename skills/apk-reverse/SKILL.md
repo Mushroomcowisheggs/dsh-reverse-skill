@@ -378,32 +378,32 @@ frida -U -f com.example.app -l hook.js
 
 ## 按需自举（On-Demand Bootstrap）
 
-本 skill 的入口脚本已接入统一自举系统。缺少工具时不会直接报错，而是自动尝试安装。
+本 skill 的入口脚本已接入统一自举探测。缺少工具时脚本会直接报错，并提示由操作者自行安装（脚本不会代装工具）。
 
 ### 自动化能力边界
 
 | 工具 | 可自动安装 | 安装方式 | 说明 |
 |------|-----------|---------|------|
-| jadx | ✓ | GitHub Release ZIP | 自动下载解压到 `%USERPROFILE%\Tools\jadx\` |
-| apktool | ✓ | GitHub Release JAR + wrapper | 自动下载 jar 并生成 bat 到 `%USERPROFILE%\Tools\apktool\` |
+| jadx | ✗ | GitHub Release ZIP | 由操作者安装并确保 `jadx` 在 PATH 上 |
+| apktool | ✗ | GitHub Release JAR + wrapper | 由操作者安装并确保 `apktool` 在 PATH 上 |
 | JEB Pro | ✗ | 用户手动安装并提供有效许可证 | 可选的 Android / ARM 交叉验证工具；第三方 MCP bridge 需单独审计 |
-| frida / frida-ps | ✓ | pip install frida-tools | 需要 Python 已安装 |
-| adb | ✓ | winget / fallback path | 自动安装 Android Platform-Tools |
+| frida / frida-ps | ✗ | pip install frida-tools | 需要 Python 已安装；由操作者安装 |
+| adb | ✗ | winget / fallback path | 由操作者安装 Android Platform-Tools 并确保 `adb` 在 PATH 上 |
 | zipalign | ✗ | 需手动安装 Android Build-Tools | `sdkmanager "build-tools;35.0.0"` |
 | apksigner | ✗ | 需手动安装 Android Build-Tools | 同上 |
 
 ### 自举触发点
 
-- `scripts/decode.ps1`：缺 jadx 或 apktool 时自动调用 `bootstrap-reverse.ps1`
-- `scripts/rebuild-sign-install.ps1`：缺 adb 或 apktool 时自动调用 bootstrap
+- `scripts/decode.ps1`：缺 jadx 或 apktool 时直接报错，提示由操作者安装并加入 PATH（不会调用 bootstrap 安装）
+- `scripts/rebuild-sign-install.ps1`：缺 adb 或 apktool 时同样直接报错，由操作者安装
 - `scripts/frida-run.ps1`：当前仍为手动检查（frida 通常已通过 pip 安装）
 
 ### 自举失败时
 
-如果自动安装失败，脚本会抛出明确错误并附带手动安装链接。常见原因：
-- 网络不通（GitHub API / PyPI 不可达）
-- winget 不可用（Windows 版本过低）
+如果探测结果是 `manual-required`，脚本会抛出明确错误并附带 `hint` 与 `docs_url`。常见原因：
+- 工具未安装，或已安装但不在 PATH 上（jadx / apktool / adb）
 - Java 未安装（apktool 依赖 JDK）
+- Python 未安装（frida-tools 依赖 pip）
 
 
 ## 任务完成自检（声称完成前 MUST 通过）
